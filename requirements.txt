@@ -1,0 +1,28 @@
+# ── Data fetching ─────────────────────────────────────────────────────────────
+yfinance>=0.2.40          # Stock price data
+requests>=2.31.0          # HTTP client for FRED, Stooq, Wikipedia, JPX
+feedparser>=6.0.11        # RSS feed parsing (Phase 4)
+
+# ── Data processing ───────────────────────────────────────────────────────────
+polars>=0.20.0            # Primary data processing (replaces pandas in the pipeline)
+pyarrow>=14.0.0           # Required for Polars ↔ DuckDB Arrow integration
+pandas>=2.0.0             # Used only for pd.read_html / pd.read_excel during scraping
+openpyxl>=3.1.0           # Excel file parsing (JPX downloads)
+lxml>=5.0.0               # Fast HTML parser used by pandas.read_html
+
+# ── Database ──────────────────────────────────────────────────────────────────
+duckdb>=0.10.0            # Embedded columnar database
+
+# ── Orchestration ─────────────────────────────────────────────────────────────
+dagster>=1.7.0            # Pipeline orchestration
+dagster-webserver>=1.7.0  # Dagster UI
+
+# ── dbt ───────────────────────────────────────────────────────────────────────
+dbt-core>=1.8.0           # SQL transformation layer (Phase 2+)
+dbt-duckdb>=1.8.0         # DuckDB adapter for dbt
+
+# ── Sentiment analysis ────────────────────────────────────────────────────────
+vaderSentiment>=3.3.2     # Rule-based sentiment scoring (Phase 4)
+
+# ── Visualisation ─────────────────────────────────────────────────────────────
+plotly>=5.22.0            # Interactive charts
