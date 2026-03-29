@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     sudo \
+    gh \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js (LTS) and Claude Code
