@@ -26,6 +26,37 @@ implementation, but the project is designed to support them in the future:
 - **Dagster asset-based design** — defining pipeline steps as Dagster assets keeps
   dependencies explicit and makes it easy to hand off sub-pipelines to agents later.
 
+## Agent Team Design (Future)
+
+The system is designed to be operated by a team of 8 agents in two layers:
+
+### Research Team (experimental, iterative loop)
+- **Researcher** — reads papers, technical indicator docs (PDFs/Markdown), proposes strategies → outputs `strategy_proposal.md`
+- **Backtester** — implements proposed strategies in Python (Polars/numpy), runs backtests → outputs `backtest_results.md`
+- **Reviewer** — validates results, flags overfitting/lookahead bias, feeds back to Researcher or approves → outputs `review.md`
+
+Approved strategies are handed off to the Implementation Team.
+
+### Implementation Team (production modules)
+- **Tech Lead** — overall integration, cross-team coordination, final review
+- **Data Engineer** — `fetcher.py`, `universe.py`, DuckDB schema, Dagster assets
+- **Quant Researcher** — `indicators.py`, oil shock correlation analysis; consumes approved strategies from Research Team
+- **Signal Engineer** — `screener.py`, `scorer.py`, multi-signal scoring
+- **NLP Engineer** — `news.py`, RSS pipeline, VADER sentiment integration
+
+### Information Flow
+```
+External knowledge (papers/docs)
+  → Researcher  → strategy_proposal.md
+  → Backtester  → backtest_results.md
+  → Reviewer    → review.md (approved)
+  → Quant Researcher → indicators.py
+  → Signal Engineer  → screener.py / scorer.py
+  → NLP Engineer     → news.py
+  → Data Engineer    → fetcher.py / DuckDB
+  → Tech Lead        → final integration
+```
+
 ## Documentation
 - [Architecture](docs/architecture.md) — pipeline phases, transformation layer, module structure
 - [Data Sources](docs/data_sources.md) — ingestion methods, crawling targets
