@@ -14,6 +14,18 @@ Given the current risk of Hormuz Strait closure affecting oil prices, the system
 1973 and 1979 oil shock patterns to identify oil-sensitive sectors, then applies
 technical screening and real-time news sentiment to generate buy/sell signals.
 
+## Extensibility Principles
+MCP, Skills, Subagents, Agent Teams, Hooks, and Plugins are not used in the current
+implementation, but the project is designed to support them in the future:
+
+- **Clear module boundaries** — each module (`fetcher.py`, `indicators.py`, etc.) has a
+  well-defined interface so individual components can be exposed as MCP servers or
+  delegated to Subagents without restructuring.
+- **Externalized configuration** — stock universe, schedules, and signal thresholds are
+  managed in config files, not hardcoded, making Hook and schedule integration straightforward.
+- **Dagster asset-based design** — defining pipeline steps as Dagster assets keeps
+  dependencies explicit and makes it easy to hand off sub-pipelines to agents later.
+
 ## Documentation
 - [Architecture](docs/architecture.md) — pipeline phases, transformation layer, module structure
 - [Data Sources](docs/data_sources.md) — ingestion methods, crawling targets
