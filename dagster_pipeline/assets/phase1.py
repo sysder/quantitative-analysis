@@ -12,7 +12,7 @@ Assets:
 import logging
 
 import polars as pl
-from dagster import asset, get_dagster_logger
+from dagster import Definitions, asset, get_dagster_logger, in_process_executor
 
 from config.settings import HISTORY_START_OIL, HISTORY_START_STOCKS
 from src.db import get_connection, write_dataframe
@@ -161,3 +161,9 @@ def tse_sector_indices() -> pl.DataFrame:
     con = get_connection()
     write_dataframe(con, df, "sector_indices")
     return df
+
+
+defs = Definitions(
+    assets=[stock_universe, oil_prices, stock_prices, nikkei_index, tse_sector_indices],
+    executor=in_process_executor,
+)
