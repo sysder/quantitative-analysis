@@ -7,7 +7,8 @@ feedparser>=6.0.11        # RSS feed parsing (Phase 4)
 polars>=0.20.0            # Primary data processing (replaces pandas in the pipeline)
 pyarrow>=14.0.0           # Required for Polars ↔ DuckDB Arrow integration
 pandas>=2.0.0             # Used only for pd.read_html / pd.read_excel during scraping
-openpyxl>=3.1.0           # Excel file parsing (JPX downloads)
+openpyxl>=3.1.0           # Excel file parsing (JPX downloads, .xlsx)
+xlrd>=2.0.1               # Excel file parsing for legacy .xls format (JPX)
 lxml>=5.0.0               # Fast HTML parser used by pandas.read_html
 
 # ── Database ──────────────────────────────────────────────────────────────────
