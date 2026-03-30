@@ -6,6 +6,7 @@ Usage:
 
     con = get_connection()
     con.execute("SELECT * FROM raw_prices LIMIT 5")
+    con.close()
 """
 
 import logging
@@ -17,29 +18,24 @@ from config.settings import DB_PATH
 
 logger = logging.getLogger(__name__)
 
-# Module-level connection cache (one connection per process)
-_connection: duckdb.DuckDBPyConnection | None = None
-
 
 def get_connection(db_path: str | Path = DB_PATH) -> duckdb.DuckDBPyConnection:
     """
-    Return a DuckDB connection, creating and initialising the schema on first call.
+    Open and return a new DuckDB connection, initialising the schema if needed.
 
-    The connection is cached at module level so all callers share one handle.
+    A fresh connection is opened on every call so that concurrent subprocesses
+    (e.g. Dagster's multiprocess executor) do not contend for a shared file lock.
+    Callers are responsible for closing the connection when finished.
     Pass db_path=':memory:' for in-memory databases (useful in tests).
     """
-    global _connection
-
-    if _connection is not None:
-        return _connection
-
-    db_path = Path(db_path)
-    db_path.parent.mkdir(parents=True, exist_ok=True)
+    if db_path != ":memory:":
+        db_path = Path(db_path)
+        db_path.parent.mkdir(parents=True, exist_ok=True)
 
     logger.info("Opening DuckDB at %s", db_path)
-    _connection = duckdb.connect(str(db_path))
-    _init_schema(_connection)
-    return _connection
+    con = duckdb.connect(str(db_path))
+    _init_schema(con)
+    return con
 
 
 def _init_schema(con: duckdb.DuckDBPyConnection) -> None:
@@ -153,22 +149,29 @@ def write_dataframe(
     mode: str = "insert_or_replace",
 ) -> None:
     """
-    Write a Polars DataFrame to a DuckDB table.
+    Write a Polars DataFrame to a DuckDB table, then close the connection.
 
     mode options:
       'insert_or_replace' — upsert (default); requires a PRIMARY KEY
       'append'            — plain INSERT INTO ... SELECT
+
+    The connection is closed after the write so that the DuckDB file lock is
+    released immediately, preventing conflicts when multiple Dagster subprocesses
+    call get_connection() concurrently.
     """
 
     if df.is_empty():
         logger.debug("Skipping write to %s: empty DataFrame", table)
+        con.close()
         return
 
-    # Register the Polars DataFrame as a DuckDB relation named '__df_tmp'
     # duckdb can query Polars DataFrames directly via the Arrow interface.
-    if mode == "insert_or_replace":
-        con.execute(f"INSERT OR REPLACE INTO {table} SELECT * FROM df")
-    else:
-        con.execute(f"INSERT INTO {table} SELECT * FROM df")
+    try:
+        if mode == "insert_or_replace":
+            con.execute(f"INSERT OR REPLACE INTO {table} SELECT * FROM df")
+        else:
+            con.execute(f"INSERT INTO {table} SELECT * FROM df")
 
-    logger.debug("Wrote %d rows to %s", len(df), table)
+        logger.debug("Wrote %d rows to %s", len(df), table)
+    finally:
+        con.close()
