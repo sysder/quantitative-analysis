@@ -2,6 +2,9 @@
 *.duckdb
 *.duckdb.wal
 
+# Dagster temporary home directories
+.tmp_dagster_home*/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
