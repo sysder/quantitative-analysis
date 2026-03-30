@@ -48,6 +48,7 @@ def _get(url: str) -> requests.Response:
 
 # ── Nikkei 225 ────────────────────────────────────────────────────────────────
 
+
 def fetch_nikkei225() -> pl.DataFrame:
     """
     Scrape Nikkei 225 constituents from the Japanese Wikipedia page.
@@ -124,6 +125,7 @@ def fetch_nikkei225() -> pl.DataFrame:
 
 # ── TOPIX 500 ─────────────────────────────────────────────────────────────────
 
+
 def fetch_topix500() -> pl.DataFrame:
     """
     Download TOPIX 500 constituents from the JPX TSE-listed-issues file.
@@ -189,6 +191,7 @@ def fetch_topix500() -> pl.DataFrame:
 
 # ── S&P 500 ───────────────────────────────────────────────────────────────────
 
+
 def fetch_sp500() -> pl.DataFrame:
     """
     Scrape S&P 500 constituents from Wikipedia.
@@ -239,6 +242,7 @@ def fetch_sp500() -> pl.DataFrame:
 
 # ── Combined universe ─────────────────────────────────────────────────────────
 
+
 def build_universe() -> pl.DataFrame:
     """
     Fetch all three indices and return a combined, deduplicated universe.
@@ -266,6 +270,7 @@ def build_universe() -> pl.DataFrame:
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
 
 def _universe_schema() -> dict:
     return {

@@ -13,14 +13,13 @@ empty DataFrame with the correct schema is returned rather than raising.
 
 import io
 import logging
-from datetime import date, datetime, timedelta
+from datetime import date
 from typing import Optional
 
 import polars as pl
 import requests
 
 from config.settings import (
-    DEFAULT_LOOKBACK_DAYS,
     FRED_API_KEY,
     FRED_BASE_URL,
     FRED_BRENT_SERIES,
@@ -30,8 +29,6 @@ from config.settings import (
     JPX_SECTOR_INDEX_URL,
     MARKET_JP,
     MARKET_US,
-    STOOQ_CSV_URL,
-    STOOQ_NIKKEI225_TICKER,
     YFINANCE_BATCH_SIZE,
     YFINANCE_INTERVAL,
 )
@@ -43,6 +40,7 @@ _REQUEST_TIMEOUT = 30
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
 
+
 def _today() -> str:
     return date.today().isoformat()
 
@@ -53,17 +51,14 @@ def _default_start(history_start: str) -> str:
 
 
 def _get(url: str, params: Optional[dict] = None) -> requests.Response:
-    headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (compatible; quant-analysis-bot/1.0)"
-        )
-    }
+    headers = {"User-Agent": ("Mozilla/5.0 (compatible; quant-analysis-bot/1.0)")}
     resp = requests.get(url, headers=headers, params=params, timeout=_REQUEST_TIMEOUT)
     resp.raise_for_status()
     return resp
 
 
 # ── Stock prices via yfinance ─────────────────────────────────────────────────
+
 
 def fetch_stock_prices(
     tickers: list[str],
@@ -174,6 +169,7 @@ def _normalise_ohlcv(df_pd, ticker: str) -> pl.DataFrame:
 
 # ── Oil prices via FRED ───────────────────────────────────────────────────────
 
+
 def fetch_oil_prices(
     start: str = HISTORY_START_OIL,
     end: Optional[str] = None,
@@ -198,7 +194,9 @@ def fetch_oil_prices(
         wti = brent.select(pl.col("date")).with_columns(pl.lit(None).cast(pl.Float64).alias("wti"))
 
     if brent.is_empty():
-        brent = wti.select(pl.col("date")).with_columns(pl.lit(None).cast(pl.Float64).alias("brent"))
+        brent = wti.select(pl.col("date")).with_columns(
+            pl.lit(None).cast(pl.Float64).alias("brent")
+        )
 
     # Join on date; outer join so we keep all dates from either series
     combined = wti.join(brent, on="date", how="full", coalesce=True).sort("date")
@@ -262,6 +260,7 @@ def _fetch_fred_series(series_id: str, start: str, end: str) -> pl.DataFrame:
 
 # ── Nikkei 225 index via yfinance ────────────────────────────────────────────
 
+
 def fetch_nikkei_index(
     start: str = "1970-01-01",
     end: Optional[str] = None,
@@ -279,8 +278,8 @@ def fetch_nikkei_index(
     if end is None:
         end = _today()
 
-    import yfinance as yf
     import pandas as pd
+    import yfinance as yf
 
     try:
         df = yf.download(
@@ -363,6 +362,7 @@ def fetch_nikkei_index(
 
 # ── TSE sector indices via JPX ────────────────────────────────────────────────
 
+
 def fetch_tse_sector_indices() -> pl.DataFrame:
     """
     Download TOPIX-17 sector index weights from JPX.
@@ -440,6 +440,7 @@ def fetch_tse_sector_indices() -> pl.DataFrame:
 
 
 # ── Schema helpers ────────────────────────────────────────────────────────────
+
 
 def _raw_prices_schema() -> dict:
     return {

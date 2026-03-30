@@ -159,7 +159,6 @@ def write_dataframe(
       'insert_or_replace' — upsert (default); requires a PRIMARY KEY
       'append'            — plain INSERT INTO ... SELECT
     """
-    import polars as pl
 
     if df.is_empty():
         logger.debug("Skipping write to %s: empty DataFrame", table)

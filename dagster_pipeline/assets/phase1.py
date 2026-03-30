@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 # ── stock_universe ─────────────────────────────────────────────────────────────
 
+
 @asset(
     group_name="phase1",
     description="Fetch Nikkei 225, TOPIX 500, and S&P 500 constituent lists.",
@@ -54,6 +55,7 @@ def stock_universe() -> pl.DataFrame:
 
 # ── oil_prices ────────────────────────────────────────────────────────────────
 
+
 @asset(
     group_name="phase1",
     description="Fetch WTI and Brent crude oil prices from FRED.",
@@ -78,6 +80,7 @@ def oil_prices() -> pl.DataFrame:
 
 # ── stock_prices ──────────────────────────────────────────────────────────────
 
+
 @asset(
     group_name="phase1",
     description="Fetch individual stock OHLCV data via yfinance.",
@@ -94,10 +97,16 @@ def stock_prices(stock_universe: pl.DataFrame) -> pl.DataFrame:
     log = get_dagster_logger()
 
     tickers = stock_universe["ticker"].to_list()
-    log.info("Fetching stock prices for %d tickers (start=%s)...", len(tickers), HISTORY_START_STOCKS)
+    log.info(
+        "Fetching stock prices for %d tickers (start=%s)...", len(tickers), HISTORY_START_STOCKS
+    )
 
     df = fetch_stock_prices(tickers, start=HISTORY_START_STOCKS)
-    log.info("Stock prices: %d rows across %d tickers", len(df), df["ticker"].n_unique() if not df.is_empty() else 0)
+    log.info(
+        "Stock prices: %d rows across %d tickers",
+        len(df),
+        df["ticker"].n_unique() if not df.is_empty() else 0,
+    )
 
     con = get_connection()
     write_dataframe(con, df, "raw_prices")
@@ -105,6 +114,7 @@ def stock_prices(stock_universe: pl.DataFrame) -> pl.DataFrame:
 
 
 # ── nikkei_index ──────────────────────────────────────────────────────────────
+
 
 @asset(
     group_name="phase1",
@@ -129,6 +139,7 @@ def nikkei_index() -> pl.DataFrame:
 
 
 # ── tse_sector_indices ────────────────────────────────────────────────────────
+
 
 @asset(
     group_name="phase1",

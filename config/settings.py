@@ -22,20 +22,22 @@ FRED_API_KEY: str = os.getenv("FRED_API_KEY", "")
 FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
 
 # FRED series identifiers
-FRED_WTI_SERIES = "DCOILWTICO"        # WTI crude oil spot price (USD/barrel)
-FRED_BRENT_SERIES = "DCOILBRENTEU"    # Brent crude oil spot price (USD/barrel)
+FRED_WTI_SERIES = "DCOILWTICO"  # WTI crude oil spot price (USD/barrel)
+FRED_BRENT_SERIES = "DCOILBRENTEU"  # Brent crude oil spot price (USD/barrel)
 
 # ── Date ranges ───────────────────────────────────────────────────────────────
 # Historical data start dates per use-case
-HISTORY_START_OIL = "1970-01-01"      # WTI available from 1986; FRED goes back further for Brent
-HISTORY_START_STOCKS = "1990-01-01"   # yfinance practical start for Japanese stocks
-HISTORY_START_INDEX = "1970-01-01"    # Nikkei 225 via Stooq
+HISTORY_START_OIL = "1970-01-01"  # WTI available from 1986; FRED goes back further for Brent
+HISTORY_START_STOCKS = "1990-01-01"  # yfinance practical start for Japanese stocks
+HISTORY_START_INDEX = "1970-01-01"  # Nikkei 225 via Stooq
 
 # Default lookback for recent price fetches (days)
 DEFAULT_LOOKBACK_DAYS = 365
 
 # ── Universe crawling URLs ────────────────────────────────────────────────────
-WIKIPEDIA_NIKKEI225_URL = "https://ja.wikipedia.org/wiki/%E6%97%A5%E7%B5%8C%E5%B9%B3%E5%9D%87%E6%A0%AA%E4%BE%A1"
+WIKIPEDIA_NIKKEI225_URL = (
+    "https://ja.wikipedia.org/wiki/%E6%97%A5%E7%B5%8C%E5%B9%B3%E5%9D%87%E6%A0%AA%E4%BE%A1"
+)
 WIKIPEDIA_SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 
 # JPX publishes the full list of TSE-listed issues as an .xls file updated monthly.
@@ -60,9 +62,7 @@ STOOQ_NIKKEI225_TICKER = "^n225"
 BOJ_STATS_BASE_URL = "https://www.stat-search.boj.or.jp"
 
 # JPX sector index download (TOPIX-17 series, latest weights)
-JPX_SECTOR_INDEX_URL = (
-    "https://www.jpx.co.jp/markets/indices/topix/files/TOPIX17_weight.xlsx"
-)
+JPX_SECTOR_INDEX_URL = "https://www.jpx.co.jp/markets/indices/topix/files/TOPIX17_weight.xlsx"
 
 # ── yfinance settings ─────────────────────────────────────────────────────────
 # Maximum tickers to fetch in a single yfinance.download() call
